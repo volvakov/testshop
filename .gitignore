@@ -9,3 +9,5 @@
 /storage/*.key
 /vendor
 .phpunit.result.cache
+
+/database/data

@@ -7,8 +7,8 @@ ARG DOCKER_GROUP_ID
 ARG SERVER_IP
 
 RUN mv "$PHP_INI_DIR/php.ini-$ENV_TYPE" "$PHP_INI_DIR/php.ini"
-COPY docker/php-fpm/php.$ENV_TYPE.conf /usr/local/etc/php-fpm.d/zz-php.conf
-COPY docker/php-fpm/php.$ENV_TYPE.ini /usr/local/etc/php/conf.d/php-addition.ini
+COPY php-fpm/php.$ENV_TYPE.conf /usr/local/etc/php-fpm.d/zz-php.conf
+COPY php-fpm/php.$ENV_TYPE.ini /usr/local/etc/php/conf.d/php-addition.ini
 
 RUN apt-get update && apt-get upgrade -y &&  apt-get install libz-dev libzip-dev libpq-dev -y
 
@@ -18,7 +18,7 @@ RUN docker-php-ext-install -j$(nproc) zip \
    && docker-php-ext-install -j$(nproc) pgsql \
    && docker-php-ext-install -j$(nproc) pdo_pgsql
 
-RUN pecl install redis-7.0.0 && docker-php-ext-enable redis
+RUN pecl install redis-5.3.7 && docker-php-ext-enable redis
 
 RUN if [ "$ENV_TYPE" = "development" ]; then pecl install xdebug-3.1.4 && docker-php-ext-enable xdebug; fi
 

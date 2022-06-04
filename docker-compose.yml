@@ -4,8 +4,8 @@ services:
   nginx:
     restart: always
     build:
-      context: .
-      dockerfile: docker/nginx/Dockerfile
+      context: docker
+      dockerfile: nginx/Dockerfile
       args:
         - ENV_TYPE=${ENV_TYPE:-development}
     ports:
@@ -26,8 +26,8 @@ services:
 
   php-fpm:
     build:
-      context: .
-      dockerfile: docker/php-fpm/Dockerfile
+      context: docker
+      dockerfile: php-fpm/Dockerfile
       args:
         - ENV_TYPE=${ENV_TYPE:-development}
         - DOCKER_USER_ID=${DOCKER_USER_ID}
@@ -50,7 +50,6 @@ services:
       - ./database/data:/var/lib/postgresql/data
     ports:
       - 127.0.0.1:5432:5432
-      - ${POSTGRE_IP}:5432:5432
     environment:
       POSTGRES_USER: ${DB_USERNAME}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
@@ -62,8 +61,8 @@ services:
   redis:
     restart: always
     build:
-      context: .
-      dockerfile: docker/redis/Dockerfile
+      context: docker
+      dockerfile: redis/Dockerfile
     networks:
       - shop_network
 
@@ -73,4 +72,4 @@ networks:
     ipam:
       driver: default
       config:
-        - subnet:  172.27.0.1/24
+        - subnet: 172.30.0.1/24

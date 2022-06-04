@@ -1,3 +1,3 @@
-FROM redis:7
-COPY docker/redis/redis.conf /usr/local/etc/redis/redis.conf
+FROM redis:5
+COPY redis/redis.conf /usr/local/etc/redis/redis.conf
 CMD [ "redis-server", "/usr/local/etc/redis/redis.conf" ]
