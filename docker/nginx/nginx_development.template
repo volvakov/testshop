@@ -1,0 +1,92 @@
+upstream nodejs {
+    server        frontend.server:3000;
+}
+
+server {
+    listen       80;
+    listen      8080;
+    server_name  localhost;
+
+    error_log /var/log/nginx/${APP_DOMAIN}-error.log;
+
+   	gzip on;
+    gzip_disable "msie6";
+    gzip_types text/plain text/css application/json application/x-javascript text/xml application/xml application/xml+rss text/javascript application/javascript;
+
+    if (${DOLLAR}request_uri ~* "/index.(php|html?)" ) {
+       rewrite ^ /${DOLLAR}1 permanent;
+    }
+
+    if (${DOLLAR}request_uri ~* "/home$" ) {
+       rewrite ^ /${DOLLAR}1 permanent;
+    }
+
+    location / {
+
+        #--------------------------------------------
+    	location ~ \.(html)/ {
+    		rewrite ^/(.*)/${DOLLAR} /${DOLLAR}1 permanent;
+    	}
+    	location /sitemap.xml/ {
+    	    return 301 /sitemap.xml;
+        }
+
+    	#--------------------------------------------
+        include /etc/nginx/cors;
+        proxy_pass http://nodejs;
+        proxy_set_header Host ${DOLLAR}host;
+        proxy_set_header X-Real-IP ${DOLLAR}remote_addr;
+        proxy_set_header X-Forwarded-For ${DOLLAR}proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto ${DOLLAR}scheme;
+    }
+
+    location ~ \.php${DOLLAR} {
+        root /var/www/html/public/;
+        include fastcgi_params;
+        include /etc/nginx/cors;
+        fastcgi_split_path_info ^(.+\.php)(/.+)${DOLLAR};
+        fastcgi_pass php-fpm:9000;
+        fastcgi_index index.php;
+        fastcgi_param Host ${DOLLAR}host;
+        fastcgi_param X-Real-IP ${DOLLAR}remote_addr;
+        fastcgi_param X-Forwarded-For ${DOLLAR}proxy_add_x_forwarded_for;
+        fastcgi_param X-Forwarded-Proto ${DOLLAR}scheme;
+        fastcgi_param SCRIPT_FILENAME ${DOLLAR}document_root${DOLLAR}fastcgi_script_name;
+        fastcgi_param PATH_INFO ${DOLLAR}fastcgi_path_info;
+    }
+
+    location /api/ {
+        try_files ${DOLLAR}uri ${DOLLAR}uri/ /index.php?${DOLLAR}query_string;
+    }
+
+    location /images/ {
+        root /var/www/html/public/;
+        autoindex off;
+        expires 7d;
+    }
+
+    location /storage/ {
+        root /var/www/html/public/;
+        autoindex off;
+        expires 7d;
+    }
+
+    location ~ .txt${DOLLAR} {
+        root /var/www/html/public;
+        try_files ${DOLLAR}uri ${DOLLAR}uri/ /index.php?${DOLLAR}query_string;
+        autoindex off;
+    }
+
+    location = /robots.txt {
+        root /var/www/html/public;
+        try_files /${DOLLAR}host.robots.txt /default.robots.txt =404;
+    }
+
+    location ~ /\.ht {
+        deny  all;
+    }
+
+    location ~ /\.git {
+        deny  all;
+    }
+}

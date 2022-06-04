@@ -1,0 +1,1 @@
+ssl_config  - main file ssl cert, including in production environment, docker/nginx/nginx_production.template:51
