@@ -2,7 +2,7 @@
     "name": "vladvolvakov/testshop",
     "type": "project",
     "description": "The Vlad Volvakov Test Shop.",
-    "keywords": ["framework", "laravel", 'vladvolvakov'],
+    "keywords": ["framework", "laravel", "vladvolvakov"],
     "license": "MIT",
     "require": {
         "php": "^8.1",
